@@ -1,0 +1,141 @@
+<div id="container"></div>
+<form id="form_sample">
+	<p>
+	<label for="name">Name:</label>
+	<input type="text" name="one_name" id="one_name" value="hisoka">
+	</p>
+	
+	<p>
+	<label for="language">Language:</label>
+	<input type="text" name="one_language" id="language" value="japanese">
+	</p>
+</form>
+
+<form id="form_another">
+	<p>
+	<label for="name">Name:</label>
+	<input type="text" name="name[]" id="name" value="killua">
+	</p>
+	
+	<p>
+	<label for="name">Name:</label>
+	<input type="text" name="name[]" id="name" value="irvine">
+	</p>
+	
+	<p>
+	<label for="name">Name:</label>
+	<input type="text" name="name[]" id="name" value="vahn">
+	</p>
+</form>
+<script src="jquery.js"></script>
+<script>
+
+var names = {
+	name: 'cool',
+	names: ['pizza','coffee','milk','c2']
+}
+
+var r = ['abc','def','ghi'];
+
+//convenience method using the request type POST if you're lazy
+$.post('ajaxback.php', {'names' : names, 'letters' : r}, function(data){
+	console.log(data);
+});
+
+//but you can actually fake it and use get as request type even if you're using $.post
+$.post('fakepost.php?name=songoku&technique=kamehamewave', {'name' : 'son gohan', 'technique' : 'awesome'}, function(data){
+	console.log(data);
+});
+
+
+//load something in the dom
+/*
+components:
+1.container - where you want to load something
+2.page - page you want to load
+3.data - data that you want to submit to the page
+4.callback - what you want to do after loading something
+*/
+$('#container').load('ajaxload.php', {'names' : names});
+
+//if you need more options
+/*
+$.ajax({
+	type: 'POST',
+	url: 'ajaxback.php',
+	data: {'names' : names},
+	success: function(data){
+		console.log(data);
+	}
+});
+//some options that might be interesting:
+	cache - specify if you want to cache the url that you've specified, 
+			if its a page thats constantly updated then use false
+		
+	statusCode - useful if you're performing ajax calls on a different domain
+			usage:
+			statusCode:{
+				404:function(){
+					//what you want to do if the page you're referencing is not found
+				},
+				403:function(){
+					//what you want to do if page is forbidden
+				}
+			}
+			whole bunch of status codes here: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+*/
+
+
+var form = $('#form_sample').serialize(); //serialize the form so you won't need to access individual form fields like this:
+/*
+var value1 = $('#input_1').val();
+var value2 = $('#input_2').val();
+
+And submit it like this:
+$.post('submitform.php', {'value1' : value1, 'value2' : value2}); //this is the old school way of doing things, it works but not that DRY
+*/
+//submitting forms via ajax through the $.post method isn't behaving as expected. 
+//seems like the data is converted into string when you do it like this:
+/*
+	$.post('submitform.php', {'form' : form});
+*/
+
+//that's why the only solution left (I think) is to use the long-method(aka $.ajax)
+/*
+$.ajax({
+	type : "POST",
+	url : "submitform.php",
+	data : form, //name of the serialize form
+	success: function(data){
+		console.log(data);
+	}
+});
+*/
+
+//SUBMITTING FORMS WITH REPEATING DATA
+var another_form = $('#form_another').serialize();
+$.ajax({
+	type : "POST",
+	url : "submitform.php",
+	data : another_form,
+	success : function(data){
+		console.log(data);
+	}
+});
+
+//fetching json
+$.post('json.php', function(data){
+	var json_data = JSON.parse(data);
+	//accessing the blogs
+	console.log("Awesome Blogs: \n");
+	for(var blog in json_data.blogs){
+		console.log(json_data.blogs[blog]);
+	}
+	
+	//output the awesome people
+	console.log("\nAwesome People: \n");
+	for(var awesome in json_data.people){
+		console.log(json_data.people[awesome]);
+	}
+});
+</script>

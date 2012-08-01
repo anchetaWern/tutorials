@@ -1,0 +1,116 @@
+<div id="container">fsfsfsffsf</div>
+<form id="form_sample" action="submitform.php" method="post">
+	<p>
+	<label for="name">Name:</label>
+	<input type="text" name="one_name" id="one_name" value="hisoka">
+	</p>
+	
+	<p>
+	<label for="language">Language:</label>
+	<input type="text" name="one_language" id="language" value="japanese">
+	</p>
+</form>
+
+<form id="form_another">
+	<p>
+	<label for="name">Name:</label>
+	<input type="text" name="name[]" id="name" value="killua">
+	</p>
+	
+	<p>
+	<label for="name">Name:</label>
+	<input type="text" name="name[]" id="name" value="irvine">
+	</p>
+	
+	<p>
+	<label for="name">Name:</label>
+	<input type="text" name="name[]" id="name" value="vahn">
+	</p>
+</form>
+
+<script src="mootools.js"></script>
+<script src="mootools-more-1.4.0.1.js"></script>
+<script>
+	
+	var names = ['kris','cross', 'nen', 'gon'];
+	var foods = {
+		name: 'cool',
+		names: ['pizza','coffee','milk','c2']
+	}
+	
+	//load something into the dom
+	var rea = new Request({
+		method: 'POST', 
+		url: 'ajaxload.php',
+		onComplete: function(data){
+			$('container').set('html', data);
+		}
+	}).send();
+
+	//ajax calls using POST Method
+	var req = new Request({
+		method: 'POST',
+		url: 'test.php',
+		data: {'names' : names, 'language' : 'php', 'foods' : foods},
+		onComplete: function(data){
+			console.log(data);
+		}
+	}).send();
+	
+	//ajax calls using both GET and POST
+	var gets = new Request({
+		method: 'POST',
+		url: 'gets.php?age=20&lives=9',
+		data: {'name' : 'bloom'},
+		onComplete: function(data){
+			console.log(data);
+		}
+	}).send();
+	
+	//toQueryString() method converts your form into a query string. So for example if you have a form like this:
+	/*
+	<form>
+		<input type="text" name="txt_name" id="txt_name" value="ichimaru"/>
+		<input type="text" name="txt_course" id="txt_course" value="nursing"/>
+	</form>
+	
+	It will be converted to something like this:
+		txt_name=ichimaru&txt_course=nursing
+	
+	If you want to look at more examples of query string try submitting an html form using the GET method
+		<form method="GET">..</form>
+	And see what's being appended into the url	
+	*/
+	//parseQueryString is part of Mootools more what it does is to convert a query string into an object which can then be submitted
+	//via ajax. You can download mootools more here: http://mootools.net/more/
+	//just select String.QueryString file if you only want to use the parseQueryString() method.
+	var form_data = $('form_sample').toQueryString().parseQueryString();
+	
+	var form = new Request({
+		method : 'POST',
+		url : 'submitform.php',
+		data : form_data, 
+		onComplete : function(data){
+			console.log(data);
+		}
+	}).send();
+	
+	
+	//retrieving JSON 
+	//when you're expecting JSON to be returned from the file that you're requesting data from.
+	//then you can use Request.JSON instead of just Request. It's like telling mootools that
+	//you're expecting JSON from the backend
+	//so instead of a plain string an object is returned.
+	var json_req = new Request.JSON({
+		url : 'json.php',
+		onComplete : function(data){
+			console.log(data); //this returns an object
+			
+			//you can then use Object.each() method to loop through 
+			//the contents of the object: http://mootools.net/docs/core/Types/Object#Object:Object-each
+			Object.each(data.blogs, function(value, key){
+				console.log(value);
+			});
+		}
+	}).send();
+</script>

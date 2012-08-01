@@ -1,0 +1,135 @@
+<form id="form_sample">
+	<p>
+	<label for="name">Name:</label>
+	<input type="text" name="one_name" id="one_name" value="hisoka">
+	</p>
+	
+	<p>
+	<label for="language">Language:</label>
+	<input type="text" name="one_language" id="language" value="japanese">
+	</p>
+</form>
+
+<form id="form_another">
+	<p>
+	<label for="name">Name:</label>
+	<input type="text" name="name[]" id="name" value="killua">
+	</p>
+	
+	<p>
+	<label for="name">Name:</label>
+	<input type="text" name="name[]" id="name" value="irvine">
+	</p>
+	
+	<p>
+	<label for="name">Name:</label>
+	<input type="text" name="name[]" id="name" value="vahn">
+	</p>
+</form>
+<div id="container"></div>
+<script src="dojo.js"></script>
+<script>
+//submit key-value pair via POST method
+/*
+dojo.xhrPost({
+	url: "submit.php",
+	content: {'name' : 'aroniero', 'age' : 138},
+	load: function(data){
+		console.log(data);
+	}
+});
+
+//submit key-value pair via GET method
+dojo.xhrGet({
+	url : "submit.php", 
+	content : {'android' : 17, 'dragonball' : 'GT'},
+	load : function(data){
+		console.log(data);
+	}
+});
+
+//submit via POST but with some GET
+dojo.xhrPost({
+	url : "submit.php?subject=software&method=Waterfall",
+	content : {'php' : 'rasmus lerdorf', 'ruby' : 'yukihiro matsumoto'},
+	load : function(data){
+		console.log(data);
+	}
+});
+*/
+
+//submit arrays via POST
+/*
+var names = ['vegeta', 'goku', 'eugene', 'steve', 'yoh'];
+dojo.xhrPost({
+	url : "submit.php",
+	content : names, //this works but it doesn't have a key, if you give it a key like this: {'names' : names} you will only be able to access the last item
+	load : function(data){
+		console.log(data);
+	}
+});
+*/
+
+//submit an object via POST
+var obj = {
+	'names' : ['vegeta', 'goku', 'eugene', 'steve', 'yoh'],
+	'languages' : ['php', 'asp.net', 'java', 'ruby', 'python']
+};
+dojo.xhrPost({
+	url : "submit.php",
+	content : obj, //you will only be able to access the last item of each property if its assigned value is an array if you submit an object like this
+	load : function(data){
+		console.log(data);
+	}
+});
+
+//access JSON
+dojo.xhrPost({
+	url : "json.php",
+	handleAs : "json", //if you're expecting your data to be in JSON format then set the handleAs property equal to json, this is the same as doing JSON.parse(data)
+	load: function(data){
+		dojo.forEach(data.blogs, function(row){
+			console.log(row);
+		});
+	}
+});
+
+//load something into the DOM
+//we use JSON.stringify on the object to convert it into string
+//a while ago we discovered that we cannot submit whole objects via ajax
+var string_json = JSON.stringify(obj);
+dojo.xhrPost({
+	url : "content.php",
+	content : {'obj' : string_json},
+	load : function(data){
+		dojo.byId('container').innerHTML = data; //update the contents of the element with the id of container with the data fetched from content.php
+	}
+});
+
+//submit a form via ajax,
+//this is a very simple example of submitting a form via ajax
+//I supplied the value via HTML that's why we don't need to listen to a submit event 
+//on the form to submit the data
+/*
+dojo.xhrPost({
+	url : "submitform.php",
+	form : dojo.byId("form_sample"), //notice the use of form instead of content, here were simply getting the form by its ID which in this case is form_sample
+	load : function(data){
+		console.log(data); 
+	}
+});
+*/
+
+dojo.xhrPost({
+	url : "submitform.php",
+	form : dojo.byId("form_another"),
+	load : function(data){
+		console.log(data);
+	}
+	error : function(){
+		//just in case you're unlucky and your ajax request/call didn't suceed the code here will be executed
+	}
+});
+
+
+</script>
