@@ -1,0 +1,149 @@
+<script src="sugar.js"></script>
+<script>
+//ARRAY METHODS
+
+//using ordinary function
+function get_first(array, num){
+   var new_array = [];
+   
+   for(var x = 0; x<num; x++){
+      new_array[x] = array[x];
+   }
+   return new_array;
+}
+//call: get_first([4,5,6,7], 2)
+//output: [4,5]
+
+//using the array prototype
+Array.prototype.get_first = function(num){
+   var new_array = [];
+   
+   for(var x = 0; x<num; x++){
+      new_array[x] = this[x];
+   }
+   return new_array;
+}
+//call: [1,2,3].get_first(2)
+//output: [1,2]
+
+//ordinary function:
+function get_average(array){
+  var r_length = array.length;
+  var total = 0;
+  for(var x in array){
+    total = total + array[x];
+  }
+  return parseFloat(total) / parseFloat(r_length);
+}
+//call: get_average([1,2,3]);
+//output: 2
+
+//extending array prototype:
+Array.prototype.get_average = function(){
+  var r_length = this.length;
+  var total = 0;
+  for(var x in this){
+    total = total + this[x];
+  }
+  return parseFloat(total) / parseFloat(r_length);
+}
+//call: [1,2,3].get_average()
+//output: 2
+
+
+//sort by ascending or descending and get first item
+function sort(array, sortby){
+   if(sortby == 'ASC'){
+     var val = array.sort(function(a, b){
+       return b + a;
+     })[0]
+   }else if(sortby == 'DESC'){
+      var val = array.sort(function(a, b){
+       return b - a;
+     })[0]
+   }
+   return val;
+}
+//call: sort([4,5,22,33,1], 'ASC')
+//output: 1
+//call: sort([4,5,22,33,1], 'DESC')
+//output: 33
+
+//extending the array prototype
+//getting the highest value from an array
+Array.prototype.max = function(){
+   return this.sort(function(a, b){
+      return b - a;
+   })[0]
+}
+//call: [44,50,24,16].max()
+//output: 50
+
+//getting the lowest value from an array
+Array.prototype.min = function(){
+   return this.sort(function(a, b){
+      return b + a;
+   })[0]
+}
+//call: [50,2,1,3,16].min()
+//output: 1
+
+/*STRING METHODS*/
+//ordinary function
+function from(str, frm){
+   var last = str.length;
+   return str.substr(frm, last);  
+}
+//call: from("javascriptiscool", 12)
+//output: cool
+
+//extending string prototype
+String.prototype.start_from = function(frm){
+   var last = this.length;
+   return this.substr(frm, last);
+}
+//call: "youareawesome".start_from(3)
+//out: awesome
+
+
+/*NUMBER METHODS*/
+//ordinary functions
+function odd(num){
+   return num % 2 !== 0;
+}
+//call: odd(4) 
+//output: false
+
+function even(num){
+	return num % 2 === 0;
+}
+//call: even(4)
+//output: true
+
+//extending number prototype
+Number.prototype.even = function(){
+   return this % 2 === 0;
+}
+//call: 30['even']()
+//output: true
+
+Number.prototype.odd = function(){
+   return this % 2 !== 0;
+}
+//call: 30['odd']()
+//output: false
+
+
+//times
+function times(num, funk){
+   for(var x=0; x<num; x++){
+     funk();
+   }
+}
+//call: times(2, function(){
+  console.log('Im repeated twice');
+})
+
+
+
+</script>

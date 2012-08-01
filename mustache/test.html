@@ -1,0 +1,199 @@
+<script src="mustache.js"></script>
+<script src="jquery171.js"></script>
+
+<script>
+$(function(){
+	var obj = {
+		search : 'google',
+		sites : ['google', 'twitter', 'facebook']
+	};
+	
+	var template = "<ul>{{#sites}}<li>{{.}}</li>{{/sites}}</ul>";
+	var html = Mustache.to_html(template, obj);
+	$('#container').html(html);
+	
+	
+	$.post('data.php', {}, function(data){
+		var ninja = JSON.parse(data);
+		ninja.appendName = function(){
+			return this.name + " awesome!"
+		};
+		var template = "<h1>{{name}}</h1><h2>Skills</h2><ul>{{#skills.rasenshuriken}}<li>{{.}}</li>{{/skills.rasenshuriken}}</ul><h2>{{appendName}}</h2><h3>{{#awesome}}{{magic_word}}{{/awesome}}</h3>";
+		var html = Mustache.to_html(template, ninja);
+		$('#sample').html(html);
+	});
+	
+	$.post('data2.php', {}, function(data){
+		var ninja = JSON.parse(data);
+		var html = Mustache.to_html($('#moves').html(), ninja);
+		$('#ninja_moves').html(html);
+	});
+	
+	var wern = {
+		name: 'wern',
+		age: 20,
+		languages: ['php', 'javascript', 'vb.net']
+	};
+	var tmpl = "<h1>{{name}}</h1><h2>{{age}}</h2><ul>{{#languages}}<li>{{.}}</li>{{/languages}}</ul>";
+	var h = Mustache.to_html(tmpl, wern);
+	$('#sec').html(h);
+	
+	$('#btn_output').click(function(){
+		var langs = {
+			unescaped_html : "<h1>What's up dude I'm inside H1 Tags! You need triple mustache for this!</h1>",
+			r : ['php', 'c++', 'c#', 'vb.net', 'assembly', 'python', 'ruby'],
+			deep : {
+				'Dragon ball' : {
+					'Characters' : ['goku', 'gohan', 'trunks', 'cell', 'vegeta'],
+					'Techniques' : ['kame hame wave', 'instant transmission']
+				},
+				'Onepiece' : {
+					'Characters' : ['luffy', 'ace', 'zoro', 'nami', 'usopp', 'sanji', 'franky', 'robin', 'brook'],
+					'Techniques' : ['Diable Jambe', 'haki', 'hocho sabaki', 'fleur', 'asura']
+				}
+			}
+		};
+		var  t = "{{{unescaped_html}}}<h1>Languages: </h1><ul>{{#r}}<li>{{.}}</li>{{/r}}</ul><h3>Onepiece Characters</h3><ul>{{#deep.Onepiece.Characters}}<li>{{.}}</li>{{/deep.Onepiece.Characters}}</ul><h3>Onepiece Techniques:</h3><ul>{{#deep.Onepiece.Techniques}}<li>{{.}}</li>{{/deep.Onepiece.Techniques}}</ul>";
+		var h = Mustache.to_html($('#characters').html(), langs);
+		$('#thr').html(h);
+		
+	});
+	
+	$('#btn_output2').click(function(){
+		var ind = {
+			'people' : [
+				{'name' : 'wern', 'age' : 20, 'dialect' : 'ilokano'},
+				{'name' : 'pedro', 'age' : 30, 'dialect' : 'tagalog'},
+				{'name' : 'juan', 'age' : 15, 'dialect' : 'pangalatok'}
+			],
+			'languages' : [
+				{'name' : 'php', 'author' : 'rasmus lerdorf'},
+				{'name' : 'python', 'author' : 'guido van rosum'},
+				{'name' : 'ruby', 'author' : 'yukihiro matsumoto'}
+			]
+		};
+		
+		var t = "<h1>People:</h1> <ul>{{#people}}<li>Name: {{name}} <br/> Age: {{age}}</li>{{/people}}</ul><h1>Languages: </h1><ul>{{#languages}}<li> Name: {{name}} <br/> Author: {{author}}</li>{{/languages}}</ul>";
+		var h = Mustache.to_html($('#languages').html(), ind);
+		$('#for').html(h);
+		
+		
+	});
+	
+	$('#btn_output3').click(function(){
+		var anime = {
+			'watched' : ['onepiece','k-on','bleach','naruto','hanasaku iroha','star driver','yuru yuri','a channel','tari tari','sword art online','durarara']
+		};
+	
+		
+		var h = Mustache.to_html($('#anime').html(), anime);
+		$('#five').html(h);
+	});
+	
+	$('#btn_output4').click(function(){
+		var anime = {
+			'cool' : ['onepiece','k-on','bleach','naruto','hanasaku iroha','star driver','yuru yuri','a channel','tari tari','sword art online','durarara']
+		};
+		var parent = $('#no_templates');
+		var h1 = $('<h1>').text('Ugly method');
+		
+		var ul = $('<ul>');	
+		
+		h1.appendTo(parent);
+		ul.appendTo(parent);
+		
+		for(var x in anime.cool){
+		
+			var li = $('<li>').text(anime.cool[x]).appendTo(ul);
+		}
+			
+	});
+	
+});
+</script>
+<div id="container"></div>
+<hr/>
+First Timer:
+<div id="sample"></div>
+<hr/>
+Remembering:
+<div id="sec"></div>
+<hr/>
+Experimenting/ Playing:
+<input type="button" id="btn_output" value="Output Names"/><br/>
+<div id="thr"></div>
+<hr/>
+Diving: 
+<input type="button" id="btn_output2" value="Output"/><br/>
+<div id="for"></div>
+<hr/>
+Using HTML:
+<input type="button" id="btn_output3" value="Output"/><br/>
+<div id="five"></div>
+
+<div id="ninja_moves"></div>
+<script type="text/html" id="moves">
+	<h1>Naruto</h1>
+	<ul>
+	{{#ninjas.naruto.skills}}
+	<li>{{.}}</li>
+	{{/ninjas.naruto.skills}}
+	</ul>
+	<h1>Sasuke</h1>
+	<ul>
+	{{#ninjas.sasuke.skills}}
+	<li>{{.}}</li>
+	{{/ninjas.sasuke.skills}}
+	</ul>
+	<h1>Rock Lee</h1>
+	<ul>
+	{{#ninjas.lee.skills}}
+	<li>{{.}}</li>
+	{{/ninjas.lee.skills}}
+	</ul>
+</script>
+
+<script type="text/html" id="characters">
+		<h1>Onepiece Characters</h1>
+		<ul>
+		{{#deep.Onepiece.Characters}}
+		<li>{{.}}</li>
+		{{/deep.Onepiece.Characters}}
+		</ul>
+		<h1>Onepiece Techniques</h1>
+		<ul>
+		{{#deep.Onepiece.Techniques}}
+		<li>{{.}}</li>
+		{{/deep.Onepiece.Techniques}}
+		</ul>
+</script>
+
+<script type="text/html" id="languages">
+		<h1>People</h1>
+		<ul>
+		{{#people}}
+		<li>Name: {{name}} <br/> Age: {{age}}</li>
+		{{/people}}
+		</ul>
+		<hr/>
+		<h1>Languages</h1>
+		<ul>
+		{{#languages}}
+		<li>Name: {{name}} <br/> Author: {{author}}</li>
+		{{/languages}}
+		</ul>
+</script>
+
+<script type="text/html" id="anime">
+	
+	<ul>
+	{{#watched}}
+		<li>{{.}}</li>
+	{{/watched}}
+	</ul>
+	
+</script>
+<hr/>
+No templates:<br/>
+<input type="button" id="btn_output4" value="Output"/><br/>
+<div id="no_templates"></div>

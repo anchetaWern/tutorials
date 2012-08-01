@@ -1,0 +1,133 @@
+<html>
+<style>
+#create, .box {
+    width: 210px;
+    height: 220px;
+    padding: 17px;
+	border: 2px solid;
+	float:left;
+}
+
+#characters{
+	width: 744px;
+	height: 254px;
+	border: 2px solid black;
+	float:left;
+}
+</style>
+
+	<script src="store.js"></script>
+	<script src="jquery171.js"></script>
+
+	<div id="create">
+		<h2>Create Character</h2>
+		<p>
+		<label for="name">Name</label>
+		<input type="text" id="name"/>
+		</p>
+		
+		<p>
+		<label for="name">Skills</label>
+		<input type="text" id="skills"/>
+		</p>
+		
+		<p>
+		<label for="name">Items</label>
+		<input type="text" id="items"/>
+		</p>
+		
+		<p>
+		<input type="button" id="btn_create" value="create"/>
+		<input type="button" id="btn_reset" value="reset storage"/>
+		</p>
+	</div>
+	
+	<div id="characters"></div>
+	
+	<script>
+	var chars = [];
+	var s_char = new Store('character');
+	
+	if(s_char.get('characters')){
+		for(var x in s_char.get('characters')){
+		   var name = s_char.get('characters')[x]['name'];
+		   var skills = s_char.get('characters')[x]['skills'];
+		   var items = s_char.get('characters')[x]['items'];
+		   
+		  	put_contents(x, name, skills, items);
+		}
+	}
+	
+	$('#btn_create').click(function(e){
+		var character_count = $('.box').length;
+		if(character_count < 3){
+			var name	= $('#name').val();
+			var skills	= $('#skills').val();
+			skills = skills.split(',');
+			var items	= $('#items').val();
+			items = items.split(',');
+		
+			var character = function(name, skills, items){
+			 this.name = name,
+			 this.skills = skills,
+			 this.items = items
+			}
+			
+			chars[character_count] = new character(name, skills, items);
+			
+			s_char.set('characters', chars);
+			
+			put_contents(character_count, name, skills, items);
+			
+			$('input[type=text]').val('');
+		}else{
+			alert('Cannot create more than 3 characters');
+		}
+	});
+	
+	$('.btn_delete').live('click', function(){
+		$('.box').remove();
+		var characters = s_char.get('characters');
+		var id = $(this).attr('id');
+		
+		delete characters[id];
+		
+				
+		var tmpArray = new Array();
+		for(el in characters) {
+			 if(characters[el]) {
+				  tmpArray.push(characters[el]);
+			 }
+		}
+		s_char.set('characters', tmpArray);
+		
+		for(var x in tmpArray){
+			var name = tmpArray[x]['name'];
+			var skills = tmpArray[x]['skills'];
+			var items = tmpArray[x]['items'];
+			
+			put_contents(x, name, skills, items);
+		}
+		
+		
+	});
+	
+	$('#btn_reset').click(function(){
+		Store.clear();
+		alert('Storage has been successfully reset!');
+		$('.box').remove();
+	});
+	
+	window.addEventListener("storage", function(e){
+		location.reload();
+	}, false);
+	
+	function put_contents(id, name, skills, items){
+		var div = $("<div>").attr('class', 'box').appendTo('#characters');
+		$("<p>").text('Name: ' + name).appendTo(div);
+		$("<p>").text('Skills: ' + skills).appendTo(div);
+		$("<p>").text('Items: ' + items).appendTo(div);
+		$("<p>").html("<input type='button' class='btn_delete' id="+ id +" value='delete'/>").appendTo(div);
+	}
+	</script>	
+</html>
