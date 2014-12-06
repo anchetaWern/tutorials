@@ -1,0 +1,27 @@
+.new_student {
+    margin-bottom: 20px;
+}
+
+td, th {
+  padding: 10px;
+}
+
+.container {
+    padding: 16px;
+}
+
+thead {
+    background-color: #ccc;
+}
+
+td {
+    background-color: #dee;
+}
+
+.age {
+    width: 37px;
+}
+
+.name {
+    width: 218px;
+}

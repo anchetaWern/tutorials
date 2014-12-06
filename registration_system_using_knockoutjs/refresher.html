@@ -1,0 +1,161 @@
+<link rel="stylesheet" href="refresher.css">
+<script src="knockout.js"></script>
+<script src="jquery-1.8.2.js"></script>
+
+<div class="container" data-bind="load: loadData()">
+	<div class="new_student">
+		<input type="text" class="name" placeholder="name" data-bind="value: person_name, hasfocus: person_name_focus"/>
+		<input type="text" class="age" placeholder="age" data-bind="value: person_age"/>
+
+		<button data-bind="click: createPerson">Create</button>		
+	</div>
+
+	<table data-bind="visible: people().length > 0" class="students">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Age</th>
+				<th>Remove</th>
+				<th>Update</th>
+			</tr>
+		</thead>
+		<tbody data-bind="foreach: people">
+			<tr>
+				<td>
+					<span data-bind="text: name, click: nameUpdating, visible: !nameUpdate()"></span>
+					<input type="text" class="name" data-bind="value: name, visible: nameUpdate, hasfocus: nameUpdate">
+				</td>
+				<td>
+					<span data-bind="text: age, click: ageUpdating, visible: !ageUpdate()"></span>
+					<input type="text" class="age" data-bind="value: age, visible: ageUpdate, hasfocus: ageUpdate">
+				</td>
+				<td><a href="#" data-bind="click: $root.removePerson">remove</a></td>
+				<td><a href="#" data-bind="click: $root.updatePerson">update</a></td>
+			</tr>
+		</tbody>
+	</table>	
+	
+	<button data-bind="click: echoPerson">echo</button>
+</div>
+
+
+
+
+<script>
+var personModel = function(id, name, age){
+	var self = this;
+	this.id = ko.observable(id);
+	this.name = ko.observable(name);
+	this.age = ko.observable(age);
+
+	this.nameUpdate = ko.observable(false);
+	this.ageUpdate = ko.observable(false);
+
+	this.nameUpdating = function(){
+		self.nameUpdate(true);
+	};
+	this.ageUpdating = function(){
+		self.ageUpdate(true);
+	};
+
+};
+
+var model = function(){
+
+	var self = this;
+	this.person_name = ko.observable("");
+	this.person_age = ko.observable("");
+	this.people = ko.observableArray([]);
+	this.person_name_focus = ko.observable(true);
+
+	this.createPerson = function(){
+		if(self.validatePerson()){
+		
+			var person = {'name' : this.person_name(), 'age' : this.person_age()};
+
+			$.ajax(
+				{
+					url: 'refresher_save.php',
+					type: 'POST',
+					data: {'student' : person, 'action' : 'insert'},
+					success: function(id){
+						console.log(this);
+						self.people.push(new personModel(id, self.person_name(), self.person_age()));
+						self.person_name("");
+						self.person_age("");
+					}
+				}
+			);			
+			
+		}else{
+			alert("Name and age are required and age should be a number!");
+		}
+	};
+
+	this.validatePerson = function(){
+		if(self.person_name() !== "" && self.person_age() != "" && Number(self.person_age()) + 0 == self.person_age()){
+			return true;
+		}
+		return false;
+	};
+
+	this.removePerson = function(person){
+		
+		$.post(
+			'refresher_save.php', 
+			{'action' : 'delete', 'student_id' : person.id()}, 
+			function(response){
+				
+				self.people.remove(person);
+			}
+		);
+	};
+
+
+	this.updatePerson = function(person){
+		var id = person.id();
+		var name = person.name();
+		var age = person.age();
+
+		var student = {'id' : id, 'name' : name, 'age' : age};
+		$.post(
+			'refresher_save.php', 
+			{'action' : 'update', 'student' : student}
+
+		);
+	};
+
+	this.loadData = function(){
+		//fetch existing data from database
+
+		$.ajax({
+			url : 'refresher_save.php',
+			dataType: 'json',
+			success: function(data){
+				
+				
+				for(var x in data){
+					var id = data[x]['id']
+					var name = data[x]['name'];
+					var age = data[x]['age'];
+					self.people.push(new personModel(id, name, age));
+				}
+				
+			}
+		});
+		/*
+		note: nothing would actually show up in the success function if the
+		data that was returned from the server isn't a json string
+		*/
+	};
+
+
+	this.echoPerson = function(){
+		console.log(ko.toJS(self.people()));
+	};
+
+};
+
+ko.applyBindings(new model());
+</script>
+		
