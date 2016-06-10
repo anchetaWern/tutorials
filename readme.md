@@ -2,7 +2,7 @@
 
 ##Tutorials
 
-A collection of code examples from the articles that I have used in my [blog](http://wernancheta.com).
+A collection of code examples from the articles that I have used in my [blog](http://wern-ancheta.com/).
 
 
 ##License
